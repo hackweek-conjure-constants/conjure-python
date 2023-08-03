@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableSet;
 import com.palantir.conjure.CaseConverter;
 import com.palantir.conjure.python.poet.AliasSnippet;
 import com.palantir.conjure.python.poet.BeanSnippet;
+import com.palantir.conjure.python.poet.ConstantSnippet;
 import com.palantir.conjure.python.poet.EnumSnippet;
 import com.palantir.conjure.python.poet.EnumSnippet.PythonEnumValue;
 import com.palantir.conjure.python.poet.PythonField;
@@ -27,9 +28,11 @@ import com.palantir.conjure.python.poet.PythonImport;
 import com.palantir.conjure.python.poet.PythonPackage;
 import com.palantir.conjure.python.poet.PythonSnippet;
 import com.palantir.conjure.python.poet.UnionSnippet;
+import com.palantir.conjure.python.processors.ConstantValueSanitizer;
 import com.palantir.conjure.python.processors.packagename.PackageNameProcessor;
 import com.palantir.conjure.python.processors.typename.TypeNameProcessor;
 import com.palantir.conjure.spec.AliasDefinition;
+import com.palantir.conjure.spec.ConstantDefinition;
 import com.palantir.conjure.spec.EnumDefinition;
 import com.palantir.conjure.spec.ObjectDefinition;
 import com.palantir.conjure.spec.Type;
@@ -86,6 +89,11 @@ public final class PythonTypeGenerator {
             @Override
             public PythonSnippet visitUnion(UnionDefinition value) {
                 return generateUnion(value);
+            }
+
+            @Override
+            public PythonSnippet visitConstant(ConstantDefinition value) {
+                return generateConstant(value);
             }
 
             @Override
@@ -182,6 +190,17 @@ public final class PythonTypeGenerator {
                 .addAllImports(imports)
                 .docs(typeDef.getDocs())
                 .options(options)
+                .build();
+    }
+
+    private ConstantSnippet generateConstant(ConstantDefinition typeDef) {
+        return ConstantSnippet.builder()
+                .pythonPackage(PythonPackage.of(
+                        implPackageNameProcessor.process(typeDef.getTypeName().getPackage())))
+                .className(implTypeNameProcessor.process(typeDef.getTypeName()))
+                .constantName(typeDef.getTypeName().getName())
+                .constantValue(ConstantValueSanitizer.sanitize(typeDef.getType(), typeDef.getValue()))
+                .myPyType(myPyTypeNameVisitor.visitPrimitive(typeDef.getType()))
                 .build();
     }
 

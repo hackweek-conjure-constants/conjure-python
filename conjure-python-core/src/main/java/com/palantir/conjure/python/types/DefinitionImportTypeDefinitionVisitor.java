@@ -21,6 +21,7 @@ import com.palantir.conjure.python.poet.NamedImport;
 import com.palantir.conjure.python.poet.PythonImport;
 import com.palantir.conjure.python.processors.typename.TypeNameProcessor;
 import com.palantir.conjure.spec.AliasDefinition;
+import com.palantir.conjure.spec.ConstantDefinition;
 import com.palantir.conjure.spec.EnumDefinition;
 import com.palantir.conjure.spec.ObjectDefinition;
 import com.palantir.conjure.spec.TypeDefinition;
@@ -66,6 +67,11 @@ public final class DefinitionImportTypeDefinitionVisitor implements TypeDefiniti
                         String.format("%sVisitor", implTypeNameProcessor.process(value.getTypeName())),
                         String.format("%sVisitor", definitionTypeNameProcessor.process(value.getTypeName()))));
         return ImmutableList.of(getTypeImport(value.getTypeName()), unionImport);
+    }
+
+    @Override
+    public List<PythonImport> visitConstant(ConstantDefinition value) {
+        return ImmutableList.of(getTypeImport(value.getTypeName()));
     }
 
     @Override

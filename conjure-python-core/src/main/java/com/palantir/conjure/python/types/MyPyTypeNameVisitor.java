@@ -18,6 +18,7 @@ package com.palantir.conjure.python.types;
 
 import com.palantir.conjure.python.processors.typename.TypeNameProcessor;
 import com.palantir.conjure.spec.AliasDefinition;
+import com.palantir.conjure.spec.ConstantDefinition;
 import com.palantir.conjure.spec.EnumDefinition;
 import com.palantir.conjure.spec.ExternalReference;
 import com.palantir.conjure.spec.ListType;
@@ -105,6 +106,11 @@ public final class MyPyTypeNameVisitor implements Type.Visitor<String> {
 
             @Override
             public String visitUnion(UnionDefinition value) {
+                return typeNameProcessor.process(value.getTypeName());
+            }
+
+            @Override
+            public String visitConstant(ConstantDefinition value) {
                 return typeNameProcessor.process(value.getTypeName());
             }
 
