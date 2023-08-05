@@ -16,6 +16,8 @@
 
 package com.palantir.conjure.python.poet;
 
+import com.palantir.conjure.spec.Documentation;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 @Value.Immutable
@@ -34,9 +36,13 @@ public interface ConstantSnippet extends PythonSnippet {
 
     String myPyType();
 
+    Optional<Documentation> docs();
+
     @Override
     default void emit(PythonPoetWriter poetWriter) {
+        docs().ifPresent(docs -> poetWriter.writeIndentedLine("# " + docs.get().trim()));
         poetWriter.writeIndentedLine(String.format("%s: %s = %s", constantName(), myPyType(), constantValue()));
+        poetWriter.writeLine();
     }
 
     class Builder extends ImmutableConstantSnippet.Builder {}

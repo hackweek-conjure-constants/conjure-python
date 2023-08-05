@@ -201,6 +201,7 @@ public final class PythonTypeGenerator {
                 .constantName(typeDef.getTypeName().getName())
                 .constantValue(ConstantValueSanitizer.sanitize(typeDef.getType(), typeDef.getValue()))
                 .myPyType(myPyTypeNameVisitor.visitPrimitive(typeDef.getType()))
+                .docs(typeDef.getDocs())
                 .build();
     }
 
